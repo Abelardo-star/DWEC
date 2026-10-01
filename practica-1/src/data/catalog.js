@@ -3,6 +3,7 @@ export const INITIAL_CATALOG = [
     id: 'GAME-001',
     title: 'Chrono Trigger',
     platform: 'SNES',
+    
     category: 'RPG',
     basePrice: 45.0,
     status: 'usado-como-nuevo',
