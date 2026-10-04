@@ -17,6 +17,19 @@ function obtenerDescuento(cantidad){
 
  const esStockBajo = (stock) => stock < Stock_bajo;
 
+ //closure
+ const crearContador = () => {
+  let totalFacturado = 0; 
+
+  return {
+    registrarVenta: (monto) => {
+      totalFacturado += monto;
+      return totalFacturado;
+    },
+    obtenerTotal: () => totalFacturado
+  };
+};
+
 // Función para modificar el precio según el estado del producto
 function aplicarAjustePorEstado(catalog, idBuscar = null) {
   if (idBuscar !== null) {
