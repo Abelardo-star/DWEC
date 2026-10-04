@@ -93,3 +93,94 @@ function aplicarDescuento(catalog, idBuscar = null) {
   return catalogoActualizado;
 }
 
+//Funciones para logica del menu
+
+// 1. Buscar producto
+export function buscarProductoPorTermino(catalog, busqueda) {
+  if (!busqueda) return null;
+  const termino = busqueda.toLowerCase();
+  
+  return catalog.find(
+    (item) => item.id === busqueda || item.title.toLowerCase().indexOf(termino) !== -1
+  ) ?? null;
+}
+
+// 2. Procesar una venta 
+export function procesarVenta(catalog, idVenta, cantidad, contadorSesion) {
+  const producto = catalog.find((p) => p.id === idVenta);
+
+  if (!producto || cantidad !== cantidad || cantidad <= 0 || cantidad > producto.stock) {
+    return null;
+  }
+
+  const recargoEstado = Estado_producto[producto.status] ?? 0;
+  const precioConEstado = producto.basePrice * (1 + recargoEstado);
+  const descVolumen = obtenerDescuento(cantidad);
+  const precioUnitarioFinal = precioConEstado * (1 - descVolumen);
+  const totalVenta = precioUnitarioFinal * cantidad;
+
+  contadorSesion.registrarVenta(totalVenta);
+
+  const nuevoCatalogo = catalog.map((p) => {
+    if (p.id === idVenta) {
+      return { ...p, stock: p.stock - cantidad };
+    }
+    return p;
+  });
+
+  const productoActualizado = nuevoCatalogo.find((p) => p.id === idVenta);
+
+  return {
+    nuevoCatalogo: nuevoCatalogo,
+    precioUnitarioFinal: precioUnitarioFinal,
+    totalVenta: totalVenta,
+    nuevoStock: productoActualizado.stock
+  };
+}
+
+// 3. Reposición de stock
+export function procesarReposicion(catalog, idReponer, cantidad) {
+  const producto = catalog.find((p) => p.id === idReponer);
+
+  if (!producto || cantidad !== cantidad || cantidad <= 0) {
+    return null;
+  }
+
+  const nuevoCatalogo = catalog.map((p) => {
+    if (p.id === idReponer) {
+      return { ...p, stock: p.stock + cantidad };
+    }
+    return p;
+  });
+
+  const productoActualizado = nuevoCatalogo.find((p) => p.id === idReponer);
+
+  return {
+    nuevoCatalogo: nuevoCatalogo,
+    titulo: productoActualizado.title,
+    nuevoStock: productoActualizado.stock
+  };
+}
+
+// 4. Calcular datos
+export function obtenerDatosInforme(catalog, contadorSesion) {
+  const totalFacturado = contadorSesion.obtenerTotal();
+
+  const valorTotalStock = catalog.reduce((acumulador, prod) => {
+    return acumulador + prod.basePrice * prod.stock;
+  }, 0);
+
+  let hayStockBajo = false;
+  for (let i = 0; i < catalog.length; i++) {
+    if (esStockBajo(catalog[i].stock)) {
+      hayStockBajo = true;
+      break;
+    }
+  }
+
+  return {
+    totalFacturado: totalFacturado,
+    valorTotalStock: valorTotalStock,
+    hayStockBajo: hayStockBajo
+  };
+}
