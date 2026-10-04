@@ -15,21 +15,14 @@ function obtenerDescuento(cantidad){
 //TABLA C
  const Stock_bajo = 3;
 
- function esStockBajo(stock) {
-  return stock < Stock_bajo;
-}
+ const esStockBajo = (stock) => stock < Stock_bajo;
 
-//funcion para modificar el estado del producto
-
-function aplicarAjustePorEstado(catalog, idBuscar) {
-  if (idBuscar === undefined) {
-    idBuscar = null;
-  }
-
+// Función para modificar el precio según el estado del producto
+function aplicarAjustePorEstado(catalog, idBuscar = null) {
   if (idBuscar !== null) {
-    var juegoEncontrado = null;
+    let juegoEncontrado = null;
 
-    for (var i = 0; i < catalog.length; i++) {
+    for (let i = 0; i < catalog.length; i++) {
       if (catalog[i].id === idBuscar) {
         juegoEncontrado = catalog[i];
         break;
@@ -37,44 +30,20 @@ function aplicarAjustePorEstado(catalog, idBuscar) {
     }
 
     if (juegoEncontrado !== null) {
-      var multiplicadorEstado = Estado_producto[juegoEncontrado.status];
-      juegoEncontrado.basePrice = juegoEncontrado.basePrice * multiplicadorEstado;
+      const ajuste = Estado_producto[juegoEncontrado.status] ?? 0;
+      return { ...juegoEncontrado,  basePrice: juegoEncontrado.basePrice * (1 + ajuste)};
     }
 
-    return juegoEncontrado;
+    return null;
   }
 
-  for (var j = 0; j < catalog.length; j++) {
-    var elemento = catalog[j];
-    var factor = Estado_producto[elemento.status];
-    elemento.basePrice = elemento.basePrice * factor;
-  }
-
-  return catalog;
-}
-
-//funcion para aplicarle el descuento
-
-function aplicarDescuento(catalog, idBuscar){
-    if (idBuscar === undefined) {
-    idBuscar = null;
-}
-    if (idBuscar !== null){
-        var juego = null;
-
-        for ( var k = 0; k < catalog.length; k++){
-            if(catalog[k].id === idBuscar){
-                juego = catalog[k];
-                break;
-            }
-        }
-        
-        if (juego !== null){
-            var porcentajeDescuento  = obtenerDescuento(juego.stock);
-            juego.basePrice = juego.basePrice * (1 - porcentajeDescuento);
-        }
-        return juego;
-    }
-
+  const catalogoActualizado = new Array(catalog.length);
+  for (let j = 0; j < catalog.length; j++) {
+    const elemento = catalog[j];
+    const factor = Estado_producto[elemento.status] ?? 0;
     
+    catalogoActualizado[j] = { ...elemento,   basePrice: elemento.basePrice * (1 + factor)};
+  }
+
+  return catalogoActualizado;
 }
