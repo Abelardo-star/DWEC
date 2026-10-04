@@ -21,7 +21,7 @@ function obtenerDescuento(cantidad){
 
 //funcion para modificar el estado del producto
 
-function aplicarAjustePorEstado(idBuscar) {
+function aplicarAjustePorEstado(catalog, idBuscar) {
   if (idBuscar === undefined) {
     idBuscar = null;
   }
@@ -55,3 +55,26 @@ function aplicarAjustePorEstado(idBuscar) {
 
 //funcion para aplicarle el descuento
 
+function aplicarDescuento(catalog, idBuscar){
+    if (idBuscar === undefined) {
+    idBuscar = null;
+}
+    if (idBuscar !== null){
+        var juego = null;
+
+        for ( var k = 0; k < catalog.length; k++){
+            if(catalog[k].id === idBuscar){
+                juego = catalog[k];
+                break;
+            }
+        }
+        
+        if (juego !== null){
+            var porcentajeDescuento  = obtenerDescuento(juego.stock);
+            juego.basePrice = juego.basePrice * (1 - porcentajeDescuento);
+        }
+        return juego;
+    }
+
+    
+}
