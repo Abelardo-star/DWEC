@@ -47,3 +47,36 @@ function aplicarAjustePorEstado(catalog, idBuscar = null) {
 
   return catalogoActualizado;
 }
+// Función para aplicar el descuento por stock
+function aplicarDescuento(catalog, idBuscar = null) {
+  if (idBuscar !== null) {
+    let juego = null;
+
+    for (let k = 0; k < catalog.length; k++) {
+      if (catalog[k].id === idBuscar) {
+        juego = catalog[k];
+        break;
+      }
+    }
+
+    if (juego !== null) {
+      const porcentajeDescuento = obtenerDescuento(juego.stock);
+      
+      return {...juego,basePrice: juego.basePrice * (1 - porcentajeDescuento)};
+    }
+
+    return null;
+  }
+
+  const catalogoActualizado = new Array(catalog.length);
+
+  for (let m = 0; m < catalog.length; m++) {
+    const item = catalog[m];
+    const descuentoAplicar = obtenerDescuento(item.stock);
+
+    catalogoActualizado[m] = {  ...item, basePrice: item.basePrice * (1 - descuentoAplicar)};
+  }
+
+  return catalogoActualizado;
+}
+
