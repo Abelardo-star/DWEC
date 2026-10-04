@@ -107,16 +107,14 @@ export function buscarProductoPorTermino(catalog, busqueda) {
 
 // 2. Procesar una venta 
 export function procesarVenta(catalog, idVenta, cantidad, contadorSesion) {
-  const producto = catalog.find((p) => p.id === idVenta);
-
-  if (!producto || cantidad !== cantidad || cantidad <= 0 || cantidad > producto.stock) {
+  const productoAjustado = aplicarAjustePorEstado(catalog, idVenta);
+  
+  if (!productoAjustado || cantidad !== cantidad || cantidad <= 0 || cantidad > productoAjustado.stock) {
     return null;
   }
 
-  const recargoEstado = Estado_producto[producto.status] ?? 0;
-  const precioConEstado = producto.basePrice * (1 + recargoEstado);
-  const descVolumen = obtenerDescuento(cantidad);
-  const precioUnitarioFinal = precioConEstado * (1 - descVolumen);
+  const productoConDescuento = aplicarDescuento([productoAjustado], idVenta, cantidad);
+  const precioUnitarioFinal = productoConDescuento.basePrice;
   const totalVenta = precioUnitarioFinal * cantidad;
 
   contadorSesion.registrarVenta(totalVenta);
@@ -137,7 +135,6 @@ export function procesarVenta(catalog, idVenta, cantidad, contadorSesion) {
     nuevoStock: productoActualizado.stock
   };
 }
-
 // 3. Reposición de stock
 export function procesarReposicion(catalog, idReponer, cantidad) {
   const producto = catalog.find((p) => p.id === idReponer);
