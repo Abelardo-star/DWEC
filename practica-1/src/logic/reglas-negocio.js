@@ -50,7 +50,7 @@ function aplicarAjustePorEstado(catalog, idBuscar = null) {
     return null;
   }
 
-  const catalogoActualizado = new Array(catalog.length);
+  const catalogoActualizado = [...catalog];
   for (let j = 0; j < catalog.length; j++) {
     const elemento = catalog[j];
     const factor = Estado_producto[elemento.status] ?? 0;
@@ -81,7 +81,7 @@ function aplicarDescuento(catalog, idBuscar = null) {
     return null;
   }
 
-  const catalogoActualizado = new Array(catalog.length);
+  const catalogoActualizado = [...catalog];
 
   for (let m = 0; m < catalog.length; m++) {
     const item = catalog[m];
