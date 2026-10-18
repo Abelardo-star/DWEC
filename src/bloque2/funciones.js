@@ -34,19 +34,17 @@ export function contarSi(lista, condicion) {
 // 🪜 2.a · Función DECLARADA:   function triple(n) { ... }
 //    triple(4) → 12      triple(0) → 0
 export function triple(n) {
-  throw new Error("Sin hacer");
+  return n*3;
 }
 
 // 🪜 2.b · ARROW FUNCTION de una línea (sin llaves ni return):   export const esPar = (n) => ...
 //    esPar(4) → true     esPar(7) → false     esPar(0) → true       Pista: el resto de dividir, %
-export const esPar = (n) => {
-  throw new Error("Sin hacer");
-};
+export const esPar = (n) => n % 2 === 0;
 
 // 🪜 2.c · Parámetro POR DEFECTO
 //    saludar("Ana") → "Hola, Ana"       saludar() → "Hola, invitado"
-export function saludar(nombre) {
-  throw new Error("Sin hacer");
+export function saludar(nombre = "invitado") {
+  return `Hola, ${nombre}`;
 }
 
 // ✍️ 2.1 · Tabla B (descuento por volumen) como FUNCIÓN DECLARADA (function nombre() {})
@@ -54,7 +52,12 @@ export function saludar(nombre) {
 //    descuentoVolumen(4) → 0.1   descuentoVolumen(10) → 0.1
 //    ⚠️ Fíjate bien en los límites (el 4): es el bug 4 del bloque D.
 export function descuentoVolumen(unidades) {
-  throw new Error("Sin hacer");
+  if (unidades >= 4){
+    return 0.1;
+  } else if (unidades >= 2){
+    return 0.05
+  }
+  return 0;
 }
 
 // ✍️ 2.2 · Precio unitario final = Tabla A y después Tabla B, redondeado.
@@ -65,22 +68,32 @@ export function descuentoVolumen(unidades) {
 //    precioFinal(20, "solo-cartucho")       → 14
 //    Pista: usa precioConEstado y descuentoVolumen; no repitas las tablas.
 export const precioFinal = function (base, estado, unidades) {
-  throw new Error("Sin hacer");
+  const precioEstado = precioConEstado(base, estado);
+  const descuento = descuentoVolumen(unidades);
+
+  return redondear(precioEstado * (1 - descuento));
 };
 
 // ✍️ 2.3 · ARROW FUNCTION que devuelve un objeto producto. El stock vale 0 si no se pasa.
 //    crearProducto(1, "Tetris", 20, 5) → { id: 1, titulo: "Tetris", precio: 20, stock: 5 }
 //    crearProducto(2, "Sonic", 15)     → { id: 2, titulo: "Sonic", precio: 15, stock: 0 }
 //    ⚠️ Mira la predicción p6: una arrow que devuelve un objeto necesita algo más.
-export const crearProducto = (id, titulo, precio, stock) => {
-  throw new Error("Sin hacer");
-};
+export const crearProducto = (id, titulo, precio, stock = 0) => ({
+  id: id,
+  titulo: titulo,
+  precio: precio,
+  stock: stock,
+});
 
 // ✍️ 2.4 · Parámetro REST: suma todos los importes que le pases, los que sean.
 //    sumarImportes(10, 20.5, 4) → 34.5      sumarImportes() → 0
 //    Hazlo con for...of (el reduce es del bloque 5). Ahora mismo el parámetro NO es rest: cámbialo.
-export function sumarImportes(importes) {
-  throw new Error("Sin hacer");
+export function sumarImportes(...importes) {
+  let total = 0;
+  for(const importe of importes){
+    total += importe;
+  }
+  return redondear(total);
 }
 
 // ✍️ 2.5 · HOF: tu propio .find() SIN usar .find(). Mira el ejemplo 2 (contarSi) y haz lo análogo:
@@ -89,5 +102,10 @@ export function sumarImportes(importes) {
 //    buscarCon([1, 2], (n) => n > 5)      → null
 //    buscarCon([{ id: 1 }, { id: 2 }], (p) => p.id === 2) → { id: 2 }
 export function buscarCon(lista, condicion) {
-  throw new Error("Sin hacer");
+  for(const elemento of lista){
+    if(condicion(elemento)){
+      return elemento;
+    }
+  }
+  return null;
 }
