@@ -9,8 +9,6 @@ export function contarAgotados(productos) {
     if (productos[i].stock === 0) {
       agotados++;
     }
-    return agotados;
   }
-  const mensaje = "esto no lo usa nadie";
-  return mensaje;
+  return agotados;
 }

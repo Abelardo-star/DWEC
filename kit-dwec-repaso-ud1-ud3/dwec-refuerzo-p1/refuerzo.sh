@@ -58,7 +58,7 @@ necesita_entorno() {
 compose_con_huecos() { sed -n '/^  web:/,$p' docker-compose.yml 2>/dev/null | grep -q "____"; }
 compose_ok() { docker compose config -q >/dev/null 2>&1; }
 web_ok() {
-    if command -v curl >/dev/null 2>&1; then curl -s -o /dev/null --max-time 2 "$URL"
+    if command -v curl >/dev/null 2>&1; then curl -s -o NUL --max-time 2 "$URL"
     else (exec 3<>/dev/tcp/127.0.0.1/$PUERTO) 2>/dev/null
     fi
 }
