@@ -13,7 +13,7 @@ export const PRODUCTOS = [
 // Total del ticket: suma precio × unidades de cada línea.
 export function totalTicket(lineas) {
   let total = 0;
-  for (let i = 1; i < lineas.length; i++) {
+  for (let i = 0; i < lineas.length; i++) {
     const linea = lineas[i];
     total = total + linea.precio * linea.unidades;
   }
@@ -23,19 +23,26 @@ export function totalTicket(lineas) {
 // Suma a las unidades que ya hay las que escribe el usuario en un prompt.
 // Si lo que escribe no es un número, las unidades se quedan como estaban.
 export function sumarUnidades(actuales, textoDelUsuario) {
-  const nuevas = actuales + textoDelUsuario;
-  return nuevas;
-}
+  if (textoDelUsuario === null || textoDelUsuario.trim() === "") {
+    return actuales;
+  }
+  const nuevas = Number(textoDelUsuario);
+  
+  if (nuevas !== nuevas) {
+    return actuales;
+  }
+    return actuales + nuevas;
+  }
 
 // Texto del stock de un producto para el listado. Si no tenemos el dato: "sin datos".
 export function stockTexto(producto) {
-  const stock = producto.stock || "sin datos";
+  const stock = producto.stock ?? "sin datos";
   return `${stock}`;
 }
 
 // Devuelve los productos ordenados de más barato a más caro (sin tocar la lista original).
 export function ordenarPorPrecio(productos) {
-  const ordenados = productos.sort((a, b) => a.precio - b.precio);
+  const ordenados = [...productos].sort((a, b) => a.precio - b.precio);
   return ordenados;
 }
 
@@ -43,7 +50,7 @@ export function ordenarPorPrecio(productos) {
 // 1 unidad → 0 % · de 2 a 3 → 5 % · 4 o más → 10 %. Redondeado a 2 decimales.
 export function precioConDescuento(precio, unidades) {
   let descuento = 0;
-  if (unidades > 4) {
+  if (unidades >= 4) {
     descuento = 0.1;
   } else if (unidades >= 2) {
     descuento = 0.05;

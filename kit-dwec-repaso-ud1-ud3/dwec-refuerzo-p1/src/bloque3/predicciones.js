@@ -13,11 +13,11 @@
 //   const alCuadrado = elevar(2);
 
 export const predicciones = {
-  p1: undefined, // m1.puntos()
-  p2: undefined, // m2.puntos()
-  p3: undefined, // m1.jugadas().length       (después del push de 999)
-  p4: undefined, // m1.puntos === 15          ⚠️ sin paréntesis
-  p5: undefined, // typeof m1.total
-  p6: undefined, // alCuadrado(5)
-  p7: undefined, // elevar(3)(2)
+  p1: 15, // m1.puntos()
+  p2: 100, // m2.puntos()
+  p3: 2, // m1.jugadas().length       (después del push de 999)
+  p4: false, // m1.puntos === 15          ⚠️ sin paréntesis
+  p5: "undefined", // typeof m1.total
+  p6: 25, // alCuadrado(5)
+  p7: 8, // elevar(3)(2)
 };
