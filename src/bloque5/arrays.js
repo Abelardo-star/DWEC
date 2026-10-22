@@ -25,57 +25,63 @@ export const reponer = (catalogo, id, unidades) =>
 // 🪜 5.a · map: cada número multiplicado por 2
 //    dobles([1, 5, 10]) → [2, 10, 20]       dobles([]) → []
 export const dobles = (numeros) => {
-  throw new Error("Sin hacer");
+  return numeros.map((numeros) => numeros *2)
 };
 
 // 🪜 5.b · filter: los mayores que un límite
 //    mayoresQue([3, 8, 1, 12], 5) → [8, 12]       mayoresQue([1, 2], 5) → []
 export const mayoresQue = (numeros, limite) => {
-  throw new Error("Sin hacer");
+  return numeros.filter((numeros) => numeros > limite)
 };
 
 // 🪜 5.c · reduce: la suma de todos (0 si está vacío)
 //    sumaTotal([3, 8, 1]) → 12      sumaTotal([]) → 0
 export const sumaTotal = (numeros) => {
-  throw new Error("Sin hacer");
+  return numeros.reduce((suma , numero) => suma + numero, 0)
 };
 
 // 🪜 5.d · Añadir al final SIN modificar la lista (nada de push): spread
 //    anadirAlFinal(["a", "b"], "c") → ["a", "b", "c"]   y la lista original sigue con 2
 export const anadirAlFinal = (lista, elemento) => {
-  throw new Error("Sin hacer");
+ return [...lista,elemento]
 };
 
 // ✍️ 5.1 · find: el producto con ese id, o null si no existe (nunca undefined)
 //    buscarPorId(CATALOGO, 4) → { id: 4, titulo: "Crash Bandicoot", ... }     buscarPorId(CATALOGO, 99) → null
 export function buscarPorId(catalogo, id) {
-  throw new Error("Sin hacer");
+ const producto = catalogo.find((producto) => producto.id === id)
+
+ if (producto === undefined){
+  return null
+ }
+ return producto
 }
 
 // ✍️ 5.2 · filter: los productos cuyo título CONTIENE el texto, sin distinguir mayúsculas
 //    buscarPorTitulo(CATALOGO, "mario") → [Super Mario 64, Dr. Mario]     buscarPorTitulo(CATALOGO, "xyz") → []
 export function buscarPorTitulo(catalogo, texto) {
-  throw new Error("Sin hacer");
+ return catalogo.filter((producto) => producto.titulo.toLowerCase().includes(texto.toLowerCase()))
 }
 
 // ✍️ 5.3 · reduce: valor del stock = suma de precio × stock, redondeado
 //    valorStock(CATALOGO) → 750       valorStock([]) → 0
 //    ⚠️ Con reduce, no con un for. Y no olvides el valor inicial (prueba [].reduce((a, n) => a + n) en la consola).
 export function valorStock(catalogo) {
-  throw new Error("Sin hacer");
+  const total =  catalogo.reduce((suma , producto) => suma + producto.precio * producto.stock, 0)
+  return Math.round(total * 100) / 100;
 }
 
 // ✍️ 5.4 · sort con comparador, SIN tocar el original: de más barato a más caro
 //    ordenarPorPrecio(CATALOGO).map((p) => p.precio) → [10, 15, 20, 25, 30, 35, 40, 60]
 //    Si te sale «TypeError: Cannot assign to read only property»: estás ordenando el original (bug 3 del bloque D).
 export function ordenarPorPrecio(catalogo) {
-  throw new Error("Sin hacer");
+ return [...catalogo].sort((a,b) => a.precio -b.precio)
 }
 
 // ✍️ 5.5 · some: ¿hay algún producto con stock por debajo de 3?
 //    hayStockBajo(CATALOGO) → true      hayStockBajo([{ stock: 5 }, { stock: 3 }]) → false
 export function hayStockBajo(catalogo) {
-  throw new Error("Sin hacer");
+  return catalogo.some((producto) => producto.stock < 3)
 }
 
 // ✍️ 5.6 · filter + map encadenados, con DESTRUCTURING en el parámetro del map
@@ -85,7 +91,15 @@ export function hayStockBajo(catalogo) {
 //    lineasCatalogo(CATALOGO).length → 7   (Sonic 2 no sale: stock 0)
 //    Pista: .map(({ titulo, plataforma, stock }) => ...)
 export function lineasCatalogo(catalogo) {
-  throw new Error("Sin hacer");
+  return catalogo
+    .filter((producto) => producto.stock > 0)
+    .map(({ titulo, plataforma, stock }) => {
+      let linea = titulo + " · " + plataforma + " · " + formatearUnidades(stock);
+      if (stock < 3) {
+        linea = linea + " ⚠️ Stock bajo";
+      }
+      return linea;
+    });
 }
 
 // ✍️ 5.7 · Inmutabilidad: vender. Como el ejemplo 3 (reponer), pero restando. 1 unidad por defecto.
@@ -93,7 +107,7 @@ export function lineasCatalogo(catalogo) {
 //    Si el producto no existe o no hay stock suficiente → devuelve el MISMO catálogo, sin cambios.
 //    vender(CATALOGO, 3) → el mismo CATALOGO (Sonic 2 tiene 0)
 export function vender(catalogo, id, unidades) {
-  throw new Error("Sin hacer");
+  
 }
 
 // ✍️ 5.8 · reduce + destructuring: resumen de las ventas de la sesión
@@ -105,5 +119,5 @@ export function vender(catalogo, id, unidades) {
 //    resumenVentas(ventas) → { totalFacturado: 132, masVendido: "Crash Bandicoot" }   (la venta con más unidades)
 //    resumenVentas([])     → { totalFacturado: 0, masVendido: null }
 export function resumenVentas(ventas) {
-  throw new Error("Sin hacer");
+
 }
