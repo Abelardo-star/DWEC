@@ -4,26 +4,56 @@
 import { Tarea } from "./Tarea.js";
 
 // 1 · Haz que herede de Tarea (una palabra antes de la llave)
-export class TareaRecurrente {
+export class TareaRecurrente extends Tarea {
   // new TareaRecurrente("Sacar la basura", "media", "2026-10-23", 7): lo mismo que una Tarea + cadaDias
   // (Bloque C · ✍️ C3: añadirás un quinto parámetro, id = null, y se lo pasarás también al super)
+  #cadaDias;
+
   constructor(titulo, prioridad, limite, cadaDias) {
     // 2 · Llama al constructor del padre (super) con lo que es de Tarea, ANTES de usar this.
+    super(titulo, prioridad, limite);
+
+    // 4 · Una recurrente sin límite no tiene sentido → si this.limite es null, TypeError.
+    if (this.limite == null) {
+      throw new TypeError("Una tarea recurrente necesita límite");
+    }
     // 3 · cadaDias tiene que ser un entero ≥ 1 → si no, RangeError.
     //     Pista: Number.isInteger
-    // 4 · Una recurrente sin límite no tiene sentido → si this.limite es null, TypeError.
     // 5 · Guarda this.cadaDias.
-    throw new Error("Sin hacer");
+    this.cadaDias = cadaDias; // pasa por el setter, que hace la validación del paso 3
+  }
+
+  get cadaDias() {
+    return this.#cadaDias;
+  }
+
+  set cadaDias(value) {
+    if (!Number.isInteger(value) || value < 1) {
+      throw new RangeError(`cadaDias debe ser un entero ≥ 1: ${value}`);
+    }
+    this.#cadaDias = value;
   }
 
   // 6 · siguiente(): devuelve una TareaRecurrente NUEVA con el mismo título, prioridad y cadaDias,
   //     y el límite cadaDias días después. ⚠️ Sin tocar this.limite: copia la fecha primero.
   //     Pista: const limite = new Date(this.limite); limite.setDate(limite.getDate() + …)
-
-  // 7 · Sobrescribe alCompletar(): en vez de [], devuelve [la siguiente].
-
-  // 8 · Sobrescribe toString(): lo del padre + " · 🔁 cada N días".
+siguiente() {
+  const limite = new Date(this.limite);
+  limite.setDate(limite.getDate() + this.cadaDias);
+  return new TareaRecurrente(
+    this.titulo,
+    this.prioridad,
+    limite,
+    this.cadaDias
+  );
 }
-
+  // 7 · Sobrescribe alCompletar(): en vez de [], devuelve [la siguiente].
+  alCompletar() {
+    return [this.siguiente()];
+  }
+  // 8 · Sobrescribe toString(): lo del padre + " · 🔁 cada N días".
+  toString() {
+    return `${super.toString()} · 🔁 cada ${this.cadaDias} días`;
+  }
+}
 // Comprueba con:  docker compose run --rm web npm test 2-recurrente
-void Tarea; // (borra esta línea cuando uses Tarea)
