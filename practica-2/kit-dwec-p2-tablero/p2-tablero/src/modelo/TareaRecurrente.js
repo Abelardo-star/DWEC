@@ -37,16 +37,11 @@ export class TareaRecurrente extends Tarea {
   // 6 · siguiente(): devuelve una TareaRecurrente NUEVA con el mismo título, prioridad y cadaDias,
   //     y el límite cadaDias días después. ⚠️ Sin tocar this.limite: copia la fecha primero.
   //     Pista: const limite = new Date(this.limite); limite.setDate(limite.getDate() + …)
-siguiente() {
-  const limite = new Date(this.limite);
-  limite.setDate(limite.getDate() + this.cadaDias);
-  return new TareaRecurrente(
-    this.titulo,
-    this.prioridad,
-    limite,
-    this.cadaDias
-  );
-}
+  siguiente() {
+    const limite = new Date(this.limite);
+    limite.setDate(limite.getDate() + this.cadaDias);
+    return new TareaRecurrente(this.titulo, this.prioridad, limite, this.cadaDias);
+  }
   // 7 · Sobrescribe alCompletar(): en vez de [], devuelve [la siguiente].
   alCompletar() {
     return [this.siguiente()];

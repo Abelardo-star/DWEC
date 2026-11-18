@@ -8,10 +8,10 @@
 export function delegar(contenedor, tipo, selector, manejador) {
   const escuchar = (evento) => {
     const elemento = evento.target.closest(selector);
-    if(elemento && contenedor.contains(elemento)) {
-      manejador(elemento,evento);
+    if (elemento && contenedor.contains(elemento)) {
+      manejador(elemento, evento);
     }
   };
-  contenedor.addEventListener(tipo,escuchar);
-  return () => contenedor.removeEventListener(tipo,escuchar);
+  contenedor.addEventListener(tipo, escuchar);
+  return () => contenedor.removeEventListener(tipo, escuchar);
 }

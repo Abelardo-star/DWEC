@@ -37,9 +37,7 @@ export class Columna {
       throw new TypeError("Solo se pueden añadir instancias de Tarea");
     }
     if (this.llena) {
-      throw new Error(
-        `La columna «${this.nombre}» está llena (límite WIP: ${this.limiteWip})`
-      );
+      throw new Error(`La columna «${this.nombre}» está llena (límite WIP: ${this.limiteWip})`);
     }
     this.#tareas.push(tarea);
     return tarea;
@@ -68,10 +66,10 @@ export class Columna {
   ordenadas() {
     return [...this.#tareas].sort((a, b) => {
       if (b.peso !== a.peso) return b.peso - a.peso;
-      if (!a.limite && !b.limite) return 0; 
-      if (!a.limite) return 1; 
-      if (!b.limite) return -1; 
-      return new Date(a.limite) - new Date(b.limite); 
+      if (!a.limite && !b.limite) return 0;
+      if (!a.limite) return 1;
+      if (!b.limite) return -1;
+      return new Date(a.limite) - new Date(b.limite);
     });
   }
 }
