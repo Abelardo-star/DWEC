@@ -21,7 +21,24 @@ const ACCIONES = {
 //   - cadaDias (si viene): entero mayor que 0. Si es correcto pero no hay limite, el error va
 //     en «limite»: una tarea que se repite necesita fecha límite
 export function validar(datos) {
-  throw new Error("Sin hacer");
+  const errores = {};
+  const titulo = datos.titulo ?? "";
+
+  if (titulo.length === 0) {
+    errores.titulo = "El título es obligatorio";
+  } else if (titulo.length > 80) {
+    errores.titulo = "El título no puede superar las 80 palabras";
+  }
+
+  if (datos?.cadaDias !== undefined) {
+    if (!Number.isInteger(datos.cadaDias) || datos.cadaDias <= 0) {
+      errores.cadaDias = "El numero tiene que ser un entero mayor que 0";
+    } else if (!datos.limite) {
+      errores.limite = "Una tarea que se repite necesita una fecha máxima";
+    }
+  }
+
+  return errores;
 }
 
 /**
@@ -104,7 +121,7 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
       }
     }
   }
-  delegar(columnas, "click", "[data-accion]", (boton, _evento) => {
+  delegar(columnas, "click", "[data-accion]", (boton) => {
     const tarjeta = boton.closest(".tarjeta");
     const id = Number(tarjeta?.dataset.id);
     if (!id) return;
@@ -124,9 +141,20 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
 
   // ✍️ B6 · submit de `form`: preventDefault, leerFormulario, validar y mostrarErrores. Si hay errores,
   //   no se crea nada. Si no, tablero.crearTarea(datos) (como un cambio más) y form.reset().
+  form.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+    const datos = leerFormulario(form);
+    const errores = validar(datos);
+    mostrarErrores(form, errores);
 
+    if (Object.keys(errores).length > 0) return;
+    cambiar(() => {
+      tablero.crearTarea(datos);
+      form.reset();
+    });
+  });
   pintar();
   return { pintar };
 }
 
-(void ACCIONES, ErrorTablero, delegar, leerFormulario, mostrarErrores, pintarLista); // (borra esta línea cuando los uses)
+//(void ACCIONES, ErrorTablero, delegar, leerFormulario, mostrarErrores, pintarLista); // (borra esta línea cuando los uses)
