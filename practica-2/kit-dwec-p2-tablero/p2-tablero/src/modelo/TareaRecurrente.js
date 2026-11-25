@@ -9,9 +9,9 @@ export class TareaRecurrente extends Tarea {
   // (Bloque C · ✍️ C3: añadirás un quinto parámetro, id = null, y se lo pasarás también al super)
   #cadaDias;
 
-  constructor(titulo, prioridad, limite, cadaDias) {
+  constructor(titulo, prioridad, limite, cadaDias, id = null) {
     // 2 · Llama al constructor del padre (super) con lo que es de Tarea, ANTES de usar this.
-    super(titulo, prioridad, limite);
+    super(titulo, prioridad, limite, id);
 
     // 4 · Una recurrente sin límite no tiene sentido → si this.limite es null, TypeError.
     if (this.limite == null) {
