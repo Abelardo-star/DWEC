@@ -126,10 +126,41 @@ export class Tablero {
   // ✍️ C4 (bloque C) ────────────────────────────────────────────────────────────
   // toJSON(): { version, limiteEnCurso, columnas: { "Por hacer": [datos…], … } }
   //   JSON.stringify(tablero) lo llama solo. Sin él sale "{}": los # no se ven. Usa aDatos.
+  toJSON() {
+    const columnas = {}; //objeto vacio y lo relleno en el bucle
+    // Recorremos las columnas en orden ("Por hacer", "En curso", "Hecho")
+    for (const nombre of Tablero.COLUMNAS) {
+      // Convertimos cada tarea del array a su versión guardable con aDatos
+      columnas[nombre] = this.columna(nombre).tareas.map(aDatos);
+    }
+
+    return {
+      version: Tablero.VERSION_DATOS, //si cambia el formato, se sube este numero
+      limiteEnCurso: this.columna("En curso").limiteWip, // conservamos el límite WIP
+      columnas,
+    };
+  }
 
   /** Lo contrario de toJSON: el MISMO tablero (columnas, ids y límite WIP). Lanza si no encaja. */
   static desdeJSON(datos) {
-    throw new Error("Sin hacer");
+    // Comprobamos primero que datos no sea null/undefined para evitar un TypeError
+    if (!datos || datos.version !== Tablero.VERSION_DATOS) {
+      throw new Error(`Versión de datos incompatible o ausente: ${datos?.version}`);
+    }
+
+    // Creamos el tablero vacío respetando el límite WIP guardado
+    const tablero = new Tablero(datos.limiteEnCurso);
+
+    for (const nombre of Tablero.COLUMNAS) {
+      // Si falta alguna columna en los datos, usamos un array vacío por seguridad
+      const lista = datos.columnas?.[nombre] ?? [];
+      for (const item of lista) {
+        // Reconstruye Tarea o TareaRecurrente con su id y la mete directo en su columna
+        tablero.columna(nombre).añadir(desdeDatos(item));
+      }
+    }
+    // devuelvo el tablero ya relleno
+    return tablero;
   }
 }
 
