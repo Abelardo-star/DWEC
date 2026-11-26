@@ -41,9 +41,9 @@ export class TareaConAgenda extends Tarea {
         }
         this.#puntos.push((nombre, minutos));
     }
-    comprobarPaso(desde) {
+    comprobarPaso(desde, hasta) {
         const total = this.#puntos.reduce((suma, p) => suma + p.minutos, 0);
-        if (desde === "Por hacer" && (total === 0 || total > this.#duracion))
+        if (hasta === "Por hacer" && (total === 0 || total > this.#duracion))
             throw new AgendaNoValidaError(total, this.#duracion);
     }
 
