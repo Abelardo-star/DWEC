@@ -5,6 +5,7 @@ import { ErrorTablero } from "../modelo/errores.js";
 import { delegar } from "./delegacion.js";
 import { leerFormulario, mostrarErrores } from "./formulario.js";
 import { pintarLista } from "./tarjeta.js";
+import { fechaATexto } from "../modelo/serializar.js";
 
 /** Botones de cada tarjeta según su columna: [texto, data-accion] */
 const ACCIONES = {
@@ -15,6 +16,34 @@ const ACCIONES = {
   ],
   Hecho: [],
 };
+const crear = (etiqueta, datos) => Object.assign(document.createElement(etiqueta),
+  datos);
+
+function crearFormulario(tarea) {
+  const form = crear("form", { noValidate: true });
+  form.dataset.form = "fecha";
+  const etiqueta = crear("label", {
+    textContent: `Fecha límite nueva de «$
+{tarea.titulo}»` });
+  etiqueta.append(
+    crear("input", {
+      name: "limite", type: "date", value:
+        fechaATexto(tarea.limite)
+    }),
+  );
+  const error = crear("p", { className: "error" });
+  error.dataset.errorDe = "limite";
+  const enviar = crear("button", { type: "submit", textContent: "Guardar" });
+  form.append(etiqueta, error, enviar, crearBoton("Cancelar", "cancelar"));
+  return form;
+}
+
+//Crear Boton
+function crearBoton(texto, accion){
+  const boton = crear("button" , {type:"button", textContent: texto});
+  boton.dataset.accion = accion;
+  return boton;
+}
 
 // ✍️ B6 · validar(datos) → { campo: "mensaje" } con los errores (objeto vacío si todo está bien)
 //   - titulo: obligatorio y como mucho 80 caracteres
@@ -79,6 +108,9 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
           boton.textContent = texto;
           tarjeta.append(boton);
         }
+        const tarea = tablero.buscar(Number(tarjeta.dataset));
+        if (columna.nombre === "Por hacer" && tarea?.limite)
+          tarjeta.append(crearBoton("Cambiar fecha y empezar", "fecha"));
       }
 
       zona.querySelector(".contador").textContent =
@@ -136,7 +168,23 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
       } else if (accion === "completar") {
         tablero.completar(id);
       }
+      if (accion === "fecha") {
+        // TU TURNO: añade crearFormulario(tarea) a ESA tarjeta y pon el foco en su input
+        columnas.querySelector("form")?.remove();
+        const formulario = crearFormulario(tablero.buscar(id));
+        tarjeta.append(formulario);
+        return;
+      }
+      if (accion === "cancelar") return columnas.querySelector("form")?.remove();
     });
+  });
+  delegar(columnas, "submit", "form", (formulario, evento) => {
+    evento.preventDefault();                                    // sin recargar la página
+    const tarea = tablero.buscar(Number(formulario.closest(".tarjeta").dataset.id));
+    const valor = formulario.elements.limite.value.trim();     // SIEMPRE un string
+    const mensaje = revisar(valor, tarea, tablero, hoy ?? new Date());
+    mostrarErrores(formulario, { limite: mensaje });          // pinta o borra el mensaje bajo el campo
+    if (mensaje === "") cambiar(() => aplicar(tablero, tarea, valor));
   });
 
   // ✍️ B6 · submit de `form`: preventDefault, leerFormulario, validar y mostrarErrores. Si hay errores,
@@ -155,6 +203,42 @@ export function iniciarApp(raiz, tablero, { hoy = null, alCambiar = () => {} } =
   });
   pintar();
   return { pintar };
+}
+function revisar(valor, tarea, tablero, hoy) {
+  // TU TURNO: las dos comprobaciones del punto 4 del enunciado, 
+  // con sus mensajes EXACTOS
+  const parrafos = form.querySelectorAll("p[data-error-de]");
+
+  parrafos.forEach((p) => {
+    const campo = p.dataset.errorDe;
+    const control = form.elements[campo];
+
+    if (tarea[campo]) {
+      p.textContent = tarea[campo];
+      control.setAttribute("aria-invalid", "true");
+    } else {
+      p.textContent = "";
+      control.removeAttribute("aria-invalid");
+    }
+    if(valor === "vacio"){
+      throw new RangeError(`Elige una fecha`)
+    }
+  });
+
+  return "";
+}
+
+function aplicar(tablero, tarea, valor) {
+  cambiar(() => {
+    if (valor === "empezar") {
+      tablero.mover(tarea.id, "En curso");
+    } else if (valor === "volver") {
+      tablero.mover(tarea.id, "Por hacer");
+    } else if (valor === "completar") {
+      tablero.completar(tarea.id);
+    }
+
+  });
 }
 
 //(void ACCIONES, ErrorTablero, delegar, leerFormulario, mostrarErrores, pintarLista); // (borra esta línea cuando los uses)
