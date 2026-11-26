@@ -2,10 +2,11 @@
 // En el bloque C volverás aquí para ✍️ C4 (toJSON y desdeJSON).
 // El tablero TIENE tres columnas: es composición, no hereda de nadie.
 import { Columna } from "./Columna.js";
-import { ColumnaLlenaError, MovimientoNoPermitidoError } from "./errores.js";
+import { ColumnaLlenaError, MovimientoNoPermitidoError, AgendaNoValidaError } from "./errores.js";
 import { Tarea } from "./Tarea.js";
 import { TareaRecurrente } from "./TareaRecurrente.js";
 import { aDatos, desdeDatos } from "./serializar.js";
+import { TareaConAgenda } from "./TareaConAgenda.js";
 
 export class Tablero {
   static COLUMNAS = Object.freeze(["Por hacer", "En curso", "Hecho"]);
@@ -49,11 +50,15 @@ export class Tablero {
   //   y la devuelve. datos es un objeto { titulo, prioridad, limite, cadaDias }: saca cada campo
   //   y pásaselo al constructor, en su orden (new Tarea(datos) NO vale: espera el título)
   crearTarea(datos) {
-    const { titulo, prioridad, limite, cadaDias } = datos;
-    const tarea =
-      cadaDias != null
-        ? new TareaRecurrente(titulo, prioridad, limite, cadaDias)
-        : new Tarea(titulo, prioridad, limite);
+    const { titulo, prioridad, limite, duracion, cadaDias } = datos;
+    let tarea;
+    if(duracion !== null){
+      tarea = new TareaConAgenda(titulo,prioridad,limite,duracion);
+    } else if (cadaDias !== null){
+      tarea = new TareaRecurrente(titulo, prioridad, limite, cadaDias);
+    } else {
+      tarea = new Tarea(titulo, prioridad, limite);
+    }
     this.columna("Por hacer").añadir(tarea);
     return tarea;
   }
@@ -73,7 +78,9 @@ export class Tablero {
   // mover(id, destino): Error si no existe la tarea · Error si la columna destino está llena
   //   (¡comprueba ANTES de quitarla de su columna, o se perdería!) · la mueve y la devuelve
   mover(id, destino) {
-    return this.#trasladar(id, destino);
+    const origen = this.dondeEsta(id);        // la columna donde está ahora
+    const tarea = this.buscar(id);
+    tarea.comprobarPaso(origen.nombre, destino);   // ← si no se cumple la regla, LANZA y aquí se corta
   }
 
   // completar(id): la mueve a «Hecho» y añade a «Por hacer» lo que devuelva tarea.alCompletar()
